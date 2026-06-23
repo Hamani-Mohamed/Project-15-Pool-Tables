@@ -1,0 +1,27 @@
+using System;
+using System.Windows.Forms;
+
+namespace Pool
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void poolTable_OnTableComplete(cntrlPoolTable table)
+        {
+            string TableResults = "";
+
+            TableResults = "Player :  " + table.TablePlayer;
+            TableResults = TableResults + "\nTable : " + table.TableTitle;
+            TableResults = TableResults + "\nTime Consumed : " + table.TimeConsumed;
+            TableResults = TableResults + "\nTotal Seconds : " + table.TotalSeconds;
+            TableResults = TableResults + "\nHourly Rate : " + table.HourlyRate.ToString();
+            TableResults = TableResults + "\nTotal Cost : " + table.TotalCost;
+
+            MessageBox.Show(TableResults);
+        }
+    }
+}
