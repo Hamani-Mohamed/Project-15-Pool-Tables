@@ -1,0 +1,140 @@
+using System;
+using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace Pool
+{
+    public partial class cntrlPoolTable : UserControl
+    {
+        public cntrlPoolTable()
+        {
+            InitializeComponent();
+        }
+
+        public delegate void TableCleared(cntrlPoolTable table);
+        public event TableCleared OnTableCleared;
+
+        string _TableTitle = "Table", _TablePlayer = "Player";
+
+        decimal _HourlyRate = 10;
+        int _TotalSeconds;
+
+        [Category("Pool Config"),
+        Description("The price per hour.")]
+        public decimal HourlyRate
+        {
+            get
+            {
+                return _HourlyRate;
+            }
+            set
+            {
+                _HourlyRate = value;
+
+                // The Invalidate method calls the OnPaint method, which redraws
+                // the control.  
+                Invalidate();
+            }
+        }
+
+        [Category("Pool Config"),
+        Description("The player's Name.")]
+        public string TablePlayer
+        {
+            get
+            {
+                return _TablePlayer;
+            }
+            set
+            {
+                _TablePlayer = value;
+
+                lblPlayer.Text = value;
+
+                Invalidate();
+            }
+        }
+
+        [Category("Pool Config"),
+        Description("The table's Name.")]
+        public string TableTitle
+        {
+            get
+            {
+                return _TableTitle;
+            }
+            set
+            {
+                _TableTitle = value;
+
+                grpTable.Text = value;
+
+                Invalidate();
+            }
+        }
+
+        public string TimeConsumed
+        {
+            get
+            {
+                return lblTimer.Text;
+            }
+        }
+
+        public int TotalSeconds
+        {
+            get
+            {
+                return _TotalSeconds;
+            }
+        }
+
+        public decimal TotalCost
+        {
+            get
+            {
+                return (_TotalSeconds / 3600m) * HourlyRate;
+            }
+        }
+
+        private void PoolTable_Load(object sender, EventArgs e)
+        {
+            btnEnd.Enabled = false;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            _TotalSeconds++;
+
+            TimeSpan time = TimeSpan.FromSeconds(_TotalSeconds);
+            string str = time.ToString(@"hh\:mm\:ss");
+            lblTimer.Text = str;
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            if (!timer1.Enabled)
+            {
+                btnStart.Text = "Stop";
+                timer1.Start();
+            }
+            else
+            {
+                btnStart.Text = "Start";
+                timer1.Stop();
+            }
+
+            btnEnd.Enabled = true;
+        }
+
+        private void btnEnd_Click(object sender, EventArgs e)
+        {
+            timer1.Stop();
+            OnTableCleared?.Invoke(this);
+            btnEnd.Enabled = false;
+            btnStart.Text = "Start";
+            lblTimer.Text = "00:00:00";
+            _TotalSeconds = 0;
+        }
+    }
+}
